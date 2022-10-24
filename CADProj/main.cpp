@@ -103,7 +103,7 @@ int main(int argc, char** argv)
 Solid* createSolid()
 {
     Point p0(-2, 0, -1), p1(-2, 0, 2), p2(2, 0, 2), p3(2, 0, -1);
-    Point p4(-2, 3, -1), p5(-2, 3, 2), p6(2, 3, 2), p7(2, 3, -1);
+
 
     Point t4(-1, 0, 1), t5(1, 0, 1), t6(0, 0, 0);
 
@@ -114,7 +114,6 @@ Solid* createSolid()
     HalfEdge* he01 = EulerOperation::mev(v0, p1, downloop);
     HalfEdge* he12 = EulerOperation::mev(he01->endv, p2, downloop);
     HalfEdge* he23 = EulerOperation::mev(he12->endv, p3, downloop);
-
     Loop* uploop = EulerOperation::mef(v0, he23->endv, downloop);
 
     HalfEdge* he14 = EulerOperation::mev(he01->endv, t4, uploop);
@@ -130,7 +129,6 @@ Solid* createSolid()
     s= EulerOperation::sweep(nowf, Point(0, 1, 0), 2);
 
     s->printSolid();
-
 
     return s;
 }
