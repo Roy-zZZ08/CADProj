@@ -142,19 +142,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="camera.h" />
     <ClInclude Include="euler_operation.h" />
     <ClInclude Include="half_edge_structure.h" />
-    <ClInclude Include="shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="euler_operation.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="color.fs" />
-    <None Include="color.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
