@@ -54,8 +54,6 @@ void drawString(const char* str, int x, int y, float color[4], void* font);
 void drawString3D(const char* str, float pos[3], float color[4], void* font);
 void showInfo();
 const char* getPrimitiveType(GLenum type);
-GLuint tessellate2();
-GLuint tessellate3();
 GLuint drawSolid(Solid* s);
 void drawFace(Face* f, GLUtesselator* tess);
 Solid* createSolid();
@@ -90,7 +88,6 @@ int main(int argc, char** argv)
     // perform tessellation and compile into display lists
 
     listId = drawSolid(s);
-    
     // the last GLUT call (LOOP)
     // window will be shown and display callback is triggered by events
     // NOTE: this call never return main().
@@ -102,10 +99,9 @@ int main(int argc, char** argv)
 // use euler operations to create solid
 Solid* createSolid()
 {
-    Point p0(-2, 0, -1), p1(-2, 0, 2), p2(2, 0, 2), p3(2, 0, -1);
-
-
-    Point t4(-1, 0, 1), t5(1, 0, 1), t6(0, 0, 0);
+    Point p0(-5, 6, -5), p1(-5, 0, -5), p2(5, 0, -5), p3(5, 6, -5); // out edge
+    Point t4(-3, 2, -5), t5(-1, 2, -5), t6(-2, 4, -5); // inner triangle
+    Point t7(3, 2, -5), t8(3, 4, -5), t9(1, 4, -5), t10(1, 2, -5); // inner quad
 
     Vertex* v0;
     Solid* s = EulerOperation::mvsf(p0, v0);
@@ -120,13 +116,19 @@ Solid* createSolid()
     HalfEdge* he45 = EulerOperation::mev(he14->endv, t5, uploop);
     HalfEdge* he56 = EulerOperation::mev(he45->endv, t6, uploop);
 
-    Loop* innerloop = EulerOperation::mef(he56->endv, he14->endv, uploop);
+    Loop* innerloop1 = EulerOperation::mef(he56->endv, he14->endv, uploop);
+    Loop* newloop1 = EulerOperation::kemr(he14->startv, he14->endv, uploop);
 
-    Loop* newloop = EulerOperation::kemr(he14->startv, he14->endv, uploop);
+    HalfEdge* he27 = EulerOperation::mev(he12->endv, t7, uploop);
+    HalfEdge* he78 = EulerOperation::mev(he27->endv, t8, uploop);
+    HalfEdge* he89 = EulerOperation::mev(he78->endv, t9, uploop);
+    HalfEdge* he910 = EulerOperation::mev(he89->endv, t10, uploop);
 
-    s->printSolid();
+    Loop* innerloop2 = EulerOperation::mef(he27->endv, he910->endv, uploop);
+    Loop* newloop2 = EulerOperation::kemr(he27->startv, he27->endv, uploop);
+
     nowf = uploop->lface;
-    s= EulerOperation::sweep(nowf, Point(0, 1, 0), 2);
+    s= EulerOperation::sweep(nowf, Point(0, 0, 1), 2);
 
     s->printSolid();
 
@@ -136,7 +138,7 @@ Solid* createSolid()
 void drawFace(Face* f, GLUtesselator* tess)
 {
     gluTessBeginPolygon(tess, 0);                       // with NULL data
-    glColor3f(rand() / double(RAND_MAX), rand() / double(RAND_MAX), rand() / double(RAND_MAX));
+    glColor3f(0.6, rand() / double(RAND_MAX) / 2.0 + 0.3, rand() / double(RAND_MAX));
 
     vector<Vertex*> vlist;
     vector<pair<int, int> >conts;
@@ -246,7 +248,6 @@ const char* getPrimitiveType(GLenum type)
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // initialize GLUT for windowing
 ///////////////////////////////////////////////////////////////////////////////
@@ -281,7 +282,6 @@ int initGLUT(int argc, char** argv)
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // initialize OpenGL
 // disable unused features
@@ -304,15 +304,14 @@ void initGL()
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
 
-    glClearColor(0, 0, 0, 0);                   // background color
+    glClearColor(0.2, 0.2, 0.2, 0);                   // background color
     glClearStencil(0);                          // clear stencil buffer
     glClearDepth(1.0f);                         // 0 is near, 1 is far
     glDepthFunc(GL_LEQUAL);
 
     initLights();
-    setCamera(0, 0, 5, 0, 0, 0);
+    setCamera(0, 3, 10, 0, 0, 0);
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -337,7 +336,6 @@ void drawString(const char* str, int x, int y, float color[4], void* font)
     glEnable(GL_LIGHTING);
     glPopAttrib();
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////////////

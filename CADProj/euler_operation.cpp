@@ -106,8 +106,9 @@ Loop* EulerOperation::mef(Vertex* v1, Vertex* v2, Loop*& lp)
 	he1->wloop = lp;
 	he2->wloop = newlp;
 	newlp->ledge = he2;
-	newlp->lface = f2;
 
+
+	newlp->lface = f2;
 	f2->floops.push_back(newlp);
 	f2->fsolid = lp->lface->fsolid;
 	f2->fsolid->sfaces.push_back(f2);
@@ -118,6 +119,7 @@ Loop* EulerOperation::mef(Vertex* v1, Vertex* v2, Loop*& lp)
 		newlp = lp;
 		lp = tmp;
 	}
+
 	return newlp;
 }
 
@@ -198,6 +200,9 @@ Solid* EulerOperation::sweep(Face* f, Point dir, double distance)
 		}
 		mef(prevUp, firstUp, lp);
 	}
+
 	kfmrh(s->sfaces[0]->floops[0], s->sfaces[1]->floops[0]);
+	kfmrh(s->sfaces[0]->floops[0], s->sfaces[2]->floops[0]);
+
 	return s;
 }
